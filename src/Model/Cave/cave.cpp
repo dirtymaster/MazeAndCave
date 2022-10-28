@@ -1,7 +1,6 @@
 #include "cave.h"
 
 namespace s21 {
-// Cave::Cave() {}
 Cave::~Cave() { ClearData(); }
 
 void Cave::SetRandomSize() { rows_ = cols_ = std::rand() % 48 + 2; }
@@ -23,7 +22,7 @@ bool Cave::ParseFile(std::string path) {
     if (!fs.is_open()) return false;
     fs >> rows_;
     fs >> cols_;
-    if (!(rows_ >= 2 && rows_ <= 50 && cols_ >= 2 && cols_ <= 50)) {
+    if (rows_ < min_width_ && rows_ > max_width_ && cols_ < min_width_ && cols_ > max_width_) {
         rows_ = cols_ = 0;
         return false;
     }
@@ -48,19 +47,18 @@ void Cave::ClearData() { matrix_of_cells_.clear(); }
 
 int Cave::GetRows() { return rows_; }
 int Cave::GetCols() { return cols_; }
-const std::vector<std::vector<int>>& Cave::GetCaveMatrix() { return matrix_of_cells_; }
+const AbstractClass::matrix& Cave::GetCaveMatrix() { return matrix_of_cells_; }
 void Cave::SetRows(int rows) { rows_ = rows; }
 void Cave::SetCols(int cols) { cols_ = cols; }
 
 void Cave::NextStep(int birth_limit, int death_limit) {
-    std::vector<std::vector<int>> tmp_matrix(matrix_of_cells_);
-    int upper, lower, left, right;
+    matrix tmp_matrix(matrix_of_cells_);
     for (int i = 0; i < rows_; ++i) {
         for (int j = 0; j < cols_; ++j) {
-            upper = (i == 0) ? rows_ - 1 : i - 1;
-            lower = (i == rows_ - 1) ? 0 : i + 1;
-            left = (j == 0) ? cols_ - 1 : j - 1;
-            right = (j == cols_ - 1) ? 0 : j + 1;
+            int upper = (i == 0) ? rows_ - 1 : i - 1;
+            int lower = (i == rows_ - 1) ? 0 : i + 1;
+            int left = (j == 0) ? cols_ - 1 : j - 1;
+            int right = (j == cols_ - 1) ? 0 : j + 1;
             int sum = tmp_matrix[upper][left] + tmp_matrix[upper][j] + tmp_matrix[upper][right] +
                       tmp_matrix[i][left] + tmp_matrix[i][right] + tmp_matrix[lower][left] +
                       tmp_matrix[lower][j] + tmp_matrix[lower][right];

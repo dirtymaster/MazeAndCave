@@ -12,22 +12,22 @@ SOURCES += \
     ../Controller/controller.cpp \
     ../Model/Cave/cave.cpp \
     ../Model/Maze/maze.cpp \
-    main.cpp \
-    mainwindow.cpp \
-    mythread.cpp \
-    square.cpp
+    MainWindow/mainwindow.cpp \
+    MyThread/mythread.cpp \
+    Square/square.cpp \
+    main.cpp
 
 HEADERS += \
     ../Controller/controller.h \
     ../Model/Cave/cave.h \
     ../Model/Maze/maze.h \
     ../Model/abstract_class.h \
-    mainwindow.h \
-    mythread.h \
-    square.h
+    MainWindow/mainwindow.h \
+    MyThread/mythread.h \
+    Square/square.h
 
 FORMS += \
-    mainwindow.ui
+    MainWindow/mainwindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

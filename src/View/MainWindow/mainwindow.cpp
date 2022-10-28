@@ -7,13 +7,13 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent), ui(new Ui::MainWindow
     InitScenes();
     InitPens();
     ui->tabWidget->setCurrentWidget(ui->Maze);
-    controller->SetMazeOrCave(true);
+    controller->SetMaze();
     thread = MyThread::GetInstance();
     connect(thread, &MyThread::Update, this, &MainWindow::on_nextStep_clicked);
     std::string dir_path = QCoreApplication::applicationDirPath().toStdString();
     examples_path_ = QString::fromStdString(dir_path.replace(dir_path.size() - 3, 3, "") + "examples/");
-//    dir_path = "/Users/pilafber/Desktop/Projects/MazeGithub/";                 // для билда в qt
-//    examples_path_ = "/Users/pilafber/Desktop/Projects/MazeGithub/examples/";  // для билда в qt
+    //    dir_path = "/Users/pilafber/Desktop/Projects/MazeGithub/";                 // для билда в qt
+    //    examples_path_ = "/Users/pilafber/Desktop/Projects/MazeGithub/examples/";  // для билда в qt
 }
 
 void MainWindow::InitScenes() {
@@ -46,7 +46,7 @@ MainWindow::~MainWindow() {
 void MainWindow::on_LoadMazeFromFile_clicked() {
     controller->ClearData();
     thread->Stop();
-    controller->SetMazeOrCave(true);
+    controller->SetMaze();
     QString str;
     str = QFileDialog::getOpenFileName(this, "Выберите файл", examples_path_, "text files (*.txt)");
     bool success = true;
@@ -67,7 +67,7 @@ void MainWindow::on_LoadMazeFromFile_clicked() {
 void MainWindow::on_GeneratePerfectMaze_clicked() {
     controller->ClearData();
     thread->Stop();
-    controller->SetMazeOrCave(true);
+    controller->SetMaze();
     if (ui->RandomSize->isChecked()) {
         controller->SetRandomSize();
     } else {
@@ -111,14 +111,14 @@ void MainWindow::PaintUpperAndLowerBorders() {
 void MainWindow::PaintCellsWalls() {
     for (int i = 0; i < controller->GetRows(); i++) {
         for (int j = 0; j < controller->GetCols(); j++) {
-            if (controller->GetRightWallMatrix()[i][j] == 1) {
+            if (controller->GetRightWallMatrix()[i][j]) {
                 int x_ = -(field_size_ / 2 - wall_thickness_) + (cell_width_ + wall_thickness_) * (j + 1);
                 maze_scene_->addLine(
                     x_, -(field_size_ / 2 - wall_thickness_) + (cell_height_ + wall_thickness_) * i, x_,
                     -(field_size_ / 2 - wall_thickness_) + (cell_height_ + wall_thickness_) * (i + 1),
                     *blackpen);
             }
-            if (controller->GetBottomWallMatrix()[i][j] == 1) {
+            if (controller->GetBottomWallMatrix()[i][j]) {
                 int y_ = -(field_size_ / 2 - wall_thickness_) + (cell_height_ + wall_thickness_) * (i + 1);
                 maze_scene_->addLine(
                     -(field_size_ / 2 - wall_thickness_) + (cell_width_ + wall_thickness_) * j, y_,
@@ -286,7 +286,7 @@ void MainWindow::PaintSolution() {
 void MainWindow::on_LoadCaveFromFile_clicked() {
     thread->Stop();
     controller->ClearData();
-    controller->SetMazeOrCave(false);
+    controller->SetCave();
     QString str;
     str = QFileDialog::getOpenFileName(this, "Выберите файл", examples_path_, "text files (*.txt)");
     bool success = true;
@@ -312,7 +312,7 @@ void MainWindow::on_LoadCaveFromFile_clicked() {
 void MainWindow::on_generateCave_clicked() {
     thread->Stop();
     controller->ClearData();
-    controller->SetMazeOrCave(false);
+    controller->SetCave();
     if (ui->RandomSizeCave->isChecked()) {
         controller->SetRandomSize();
     } else {

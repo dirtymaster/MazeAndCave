@@ -9,9 +9,9 @@
 #include <QMouseEvent>
 #include <QWidget>
 
-#include "../Controller/controller.h"
-#include "mythread.h"
-#include "square.h"
+#include "../../Controller/controller.h"
+#include "../MyThread/mythread.h"
+#include "../Square/square.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {

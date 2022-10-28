@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
-#include "Model/Maze/maze.h"
 #include "Model/Cave/cave.h"
+#include "Model/Maze/maze.h"
 
 namespace s21 {
 TEST(test, maze_generation) {
@@ -13,22 +13,17 @@ TEST(test, maze_generation) {
         for (int i = 0; i < maze.GetRows(); ++i) {
             for (int j = 0; j < maze.GetCols(); ++j) {
                 if (i != 0 && j != 0) {
-                    if (maze.GetBottomWallMatrix()[i - 1][j - 1] ||
-                        maze.GetRightWallMatrix()[i - 1][j - 1])
+                    if (maze.GetBottomWallMatrix()[i - 1][j - 1] || maze.GetRightWallMatrix()[i - 1][j - 1])
                         continue;
                 }
                 if (j != 0) {
-                    if (maze.GetBottomWallMatrix()[i][j - 1] ||
-                        maze.GetRightWallMatrix()[i][j - 1])
-                        continue;
+                    if (maze.GetBottomWallMatrix()[i][j - 1] || maze.GetRightWallMatrix()[i][j - 1]) continue;
                 }
                 if (i != maze.GetRows() - 1 || j != 0) {
                     if (maze.GetRightWallMatrix()[i + 1][j - 1]) continue;
                 }
                 if (i != 0) {
-                    if (maze.GetBottomWallMatrix()[i - 1][j] ||
-                        maze.GetRightWallMatrix()[i - 1][j])
-                        continue;
+                    if (maze.GetBottomWallMatrix()[i - 1][j] || maze.GetRightWallMatrix()[i - 1][j]) continue;
                 }
                 if (maze.GetBottomWallMatrix()[i][j] || maze.GetRightWallMatrix()[i][j]) continue;
                 if (i != maze.GetRows() - 1) {
@@ -61,7 +56,6 @@ TEST(test, maze_generation) {
 TEST(test, maze_solving) {
     for (int k = 0; k < 100; k++) {
         Maze maze;
-        maze.SetMazeOrCave(true);
         maze.SetRandomSize();
         maze.GeneratePerfect();
 

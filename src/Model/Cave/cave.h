@@ -11,7 +11,6 @@
 namespace s21 {
 class Cave : public AbstractClass {
 public:
-    // Cave();
     ~Cave();
     void SetRandomSize();
     void GeneratePerfect();
@@ -21,14 +20,14 @@ public:
 
     int GetRows();
     int GetCols();
-    const std::vector<std::vector<int>>& GetCaveMatrix();
+    const matrix& GetCaveMatrix();
     void SetRows(int rows);
     void SetCols(int cols);
 
 private:
     int rows_ = 0;
     int cols_ = 0;
-    std::vector<std::vector<int>> matrix_of_cells_;
+    matrix matrix_of_cells_;
     void AllocateMemory();
 };
 }  // namespace s21
