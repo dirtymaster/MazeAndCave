@@ -5,8 +5,8 @@
 #include <vector>
 
 #include "../Model/abstract_class.h"
-#include "../Model/maze.h"
-#include "../Model/cave.h"
+#include "../Model/Cave/cave.h"
+#include "../Model/Maze/maze.h"
 
 namespace s21 {
 class Controller {

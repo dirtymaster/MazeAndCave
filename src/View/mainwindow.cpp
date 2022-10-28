@@ -1,7 +1,6 @@
 #include "mainwindow.h"
 
 #include "ui_mainwindow.h"
-Threads* Threads::instance_ = nullptr;
 MainWindow::MainWindow(QWidget *parent) : QWidget(parent), ui(new Ui::MainWindow) {
     controller = s21::Controller::GetInstance();
     ui->setupUi(this);
@@ -9,7 +8,12 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent), ui(new Ui::MainWindow
     InitPens();
     ui->tabWidget->setCurrentWidget(ui->Maze);
     controller->SetMazeOrCave(true);
-    connect(Threads::GetInstance(), &Threads::Update, this, &MainWindow::on_nextStep_clicked);
+    thread = MyThread::GetInstance();
+    connect(thread, &MyThread::Update, this, &MainWindow::on_nextStep_clicked);
+    std::string dir_path = QCoreApplication::applicationDirPath().toStdString();
+    examples_path_ = QString::fromStdString(dir_path.replace(dir_path.size() - 3, 3, "") + "examples/");
+//    dir_path = "/Users/pilafber/Desktop/Projects/MazeGithub/";                 // для билда в qt
+//    examples_path_ = "/Users/pilafber/Desktop/Projects/MazeGithub/examples/";  // для билда в qt
 }
 
 void MainWindow::InitScenes() {
@@ -36,12 +40,15 @@ void MainWindow::InitPens() {
 MainWindow::~MainWindow() {
     delete ui;
     delete maze_scene_;
+    connect(thread, &QThread::finished, thread, &QObject::deleteLater);
 }
 
 void MainWindow::on_LoadMazeFromFile_clicked() {
     controller->ClearData();
+    thread->Stop();
+    controller->SetMazeOrCave(true);
     QString str;
-    str = QFileDialog::getOpenFileName(this, "Выберите файл", "/", "text files (*.txt)");
+    str = QFileDialog::getOpenFileName(this, "Выберите файл", examples_path_, "text files (*.txt)");
     bool success = true;
     if (str.size() != 0) {
         success = controller->ParseFile(str.toStdString());
@@ -59,6 +66,8 @@ void MainWindow::on_LoadMazeFromFile_clicked() {
 
 void MainWindow::on_GeneratePerfectMaze_clicked() {
     controller->ClearData();
+    thread->Stop();
+    controller->SetMazeOrCave(true);
     if (ui->RandomSize->isChecked()) {
         controller->SetRandomSize();
     } else {
@@ -94,9 +103,9 @@ void MainWindow::PaintUpperAndLowerBorders() {
         -(field_size_ / 2 - wall_thickness_) + (cell_width_ + wall_thickness_) * controller->GetCols(),
         -(field_size_ / 2 - wall_thickness_), *blackpen);
     maze_scene_->addLine(-(field_size_ / 2 - wall_thickness_), -(field_size_ / 2 - wall_thickness_),
-                   -(field_size_ / 2 - wall_thickness_),
-                   -(field_size_ / 2 - wall_thickness_) + (cell_height_ + 2) * controller->GetRows(),
-                   *blackpen);
+                         -(field_size_ / 2 - wall_thickness_),
+                         -(field_size_ / 2 - wall_thickness_) + (cell_height_ + 2) * controller->GetRows(),
+                         *blackpen);
 }
 
 void MainWindow::PaintCellsWalls() {
@@ -132,7 +141,7 @@ void MainWindow::on_RandomSize_stateChanged(int arg1) {
 
 void MainWindow::on_SaveToTextFile_clicked() {
     QString str;
-    str = QFileDialog::getOpenFileName(this, "Выберите файл", "/", "text files (*.txt)");
+    str = QFileDialog::getOpenFileName(this, "Выберите файл", examples_path_, "text files (*.txt)");
     bool success = true;
     if (str.size() != 0) {
         success = controller->SaveToTextFile(str.toStdString());
@@ -275,8 +284,11 @@ void MainWindow::PaintSolution() {
 }
 
 void MainWindow::on_LoadCaveFromFile_clicked() {
+    thread->Stop();
+    controller->ClearData();
+    controller->SetMazeOrCave(false);
     QString str;
-    str = QFileDialog::getOpenFileName(this, "Выберите файл", "/", "text files (*.txt)");
+    str = QFileDialog::getOpenFileName(this, "Выберите файл", examples_path_, "text files (*.txt)");
     bool success = true;
     if (str.size() != 0) {
         success = controller->ParseFile(str.toStdString());
@@ -297,13 +309,14 @@ void MainWindow::on_LoadCaveFromFile_clicked() {
     ui->autoupdate->setEnabled(true);
 }
 
-void MainWindow::on_generateCave_clicked()
-{
+void MainWindow::on_generateCave_clicked() {
+    thread->Stop();
     controller->ClearData();
+    controller->SetMazeOrCave(false);
     if (ui->RandomSizeCave->isChecked()) {
         controller->SetRandomSize();
     } else {
-        controller->SetRows(ui->HeightSpinBoxCave->value());
+        controller->SetRows(ui->WidthSpinBoxCave->value());
         controller->SetCols(ui->WidthSpinBoxCave->value());
     }
     controller->GeneratePerfect();
@@ -315,13 +328,10 @@ void MainWindow::on_generateCave_clicked()
     ui->autoupdate->setEnabled(true);
 }
 
-void MainWindow::on_RandomSizeCave_stateChanged(int arg1)
-{
+void MainWindow::on_RandomSizeCave_stateChanged(int arg1) {
     if (arg1 == Qt::Checked) {
-        ui->HeightSpinBoxCave->setEnabled(false);
         ui->WidthSpinBoxCave->setEnabled(false);
     } else {
-        ui->HeightSpinBoxCave->setEnabled(true);
         ui->WidthSpinBoxCave->setEnabled(true);
     }
 }
@@ -329,51 +339,39 @@ void MainWindow::on_RandomSizeCave_stateChanged(int arg1)
 void MainWindow::PaintCave() {
     cave_scene_->clear();
 
-    cell_height_ = cell_width_ = (field_size_ - (field_size_ % controller->GetRows())) / controller->GetRows();
+    cell_height_ = cell_width_ =
+        (field_size_ - (field_size_ % controller->GetRows())) / controller->GetRows();
 
     for (int i = 0; i < controller->GetRows(); ++i) {
         for (int j = 0; j < controller->GetCols(); ++j) {
             if (controller->GetCaveMatrix()[i][j]) {
-                Square* square = new Square(i, j, field_size_, cell_height_, cell_width_);
+                Square *square = new Square(i, j, field_size_, cell_height_, cell_width_);
                 cave_scene_->addItem(square);
             }
         }
     }
 }
 
-void MainWindow::on_tabWidget_currentChanged()
-{
-    if (ui->Maze->isActiveWindow())
-        controller->SetMazeOrCave(true);
-    else
-        controller->SetMazeOrCave(false);
-}
+void MainWindow::on_tabWidget_currentChanged() {}
 
-void MainWindow::on_nextStep_clicked()
-{
+void MainWindow::on_nextStep_clicked() {
     controller->NextStep(ui->birthLimit->value(), ui->deathLimit->value());
     PaintCave();
 }
 
-
-void MainWindow::on_birthLimit_valueChanged(int arg1)
-{
+void MainWindow::on_birthLimit_valueChanged() {
     if (ui->birthLimit->value() <= ui->deathLimit->value())
         ui->deathLimit->setValue(ui->birthLimit->value() - 1);
 }
 
-
-void MainWindow::on_deathLimit_valueChanged(int arg1)
-{
+void MainWindow::on_deathLimit_valueChanged() {
     if (ui->deathLimit->value() + 1 >= ui->birthLimit->value())
         ui->birthLimit->setValue(ui->deathLimit->value() + 1);
 }
 
-
-
-void MainWindow::on_autoupdate_clicked()
-{
-    Threads::GetInstance()->ChangeFps(ui->fps->value());
-    Threads::GetInstance()->start();
-//    delete thread;
+void MainWindow::on_autoupdate_clicked() {
+    thread->ChangeFps(ui->fps->value());
+    thread->GetInstance()->start();
 }
+
+void MainWindow::on_fps_valueChanged() { thread->ChangeFps(ui->fps->value()); }

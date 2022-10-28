@@ -10,18 +10,20 @@ CONFIG += c++17
 
 SOURCES += \
     ../Controller/controller.cpp \
-    ../Model/cave.cpp \
-    ../Model/maze.cpp \
+    ../Model/Cave/cave.cpp \
+    ../Model/Maze/maze.cpp \
     main.cpp \
     mainwindow.cpp \
+    mythread.cpp \
     square.cpp
 
 HEADERS += \
     ../Controller/controller.h \
+    ../Model/Cave/cave.h \
+    ../Model/Maze/maze.h \
     ../Model/abstract_class.h \
-    ../Model/cave.h \
-    ../Model/maze.h \
     mainwindow.h \
+    mythread.h \
     square.h
 
 FORMS += \

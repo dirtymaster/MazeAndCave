@@ -10,18 +10,12 @@ namespace s21 {
 class AbstractClass {
 public:
     virtual ~AbstractClass() {}
-    void SetMazeOrCave(bool is_maze) {
-        if (is_maze)
-            is_maze_ = true;
-        else
-            is_maze_ = false;
-    }
+    void SetMazeOrCave(bool is_maze) { is_maze_ = is_maze; }
     bool GetMazeOrCave() { return is_maze_; }
     virtual void SetRandomSize() = 0;
     virtual void GeneratePerfect() = 0;
     virtual bool ParseFile(std::string path) = 0;
     virtual void ClearData() = 0;
-    virtual bool SaveToTextFile(std::string path) = 0;
     virtual int GetRows() = 0;
     virtual int GetCols() = 0;
     virtual void SetRows(int rows) = 0;

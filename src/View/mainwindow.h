@@ -8,11 +8,9 @@
 #include <QMessageBox>
 #include <QMouseEvent>
 #include <QWidget>
-#include <QThread>
-#include <QTimer>
-#include <unistd.h>
 
 #include "../Controller/controller.h"
+#include "mythread.h"
 #include "square.h"
 
 QT_BEGIN_NAMESPACE
@@ -26,15 +24,15 @@ class Threads;
 class MainWindow : public QWidget {
     Q_OBJECT
 
-   public:
+public:
     MainWindow(QWidget* parent = nullptr);
     ~MainWindow();
     Ui::MainWindow* ui;
 
-   protected:
+protected:
     void mousePressEvent(QMouseEvent* event) override;
 
-   public slots:
+public slots:
     void on_LoadMazeFromFile_clicked();
     void on_GeneratePerfectMaze_clicked();
     void on_RandomSize_stateChanged(int arg1);
@@ -45,8 +43,8 @@ class MainWindow : public QWidget {
     void on_generateCave_clicked();
     void on_RandomSizeCave_stateChanged(int arg1);
     void on_nextStep_clicked();
-    void on_birthLimit_valueChanged(int arg1);
-    void on_deathLimit_valueChanged(int arg1);
+    void on_birthLimit_valueChanged();
+    void on_deathLimit_valueChanged();
     void on_autoupdate_clicked();
 
 private:
@@ -81,32 +79,13 @@ private:
     std::pair<int, int> nearest_cell_;
     double minimum_distance_;
     std::pair<int, int> from_, to_;
-//    Threads* thread;
+
+    QString examples_path_;
+    MyThread* thread;
+signals:
+    void SendStop();
+private slots:
+    void on_fps_valueChanged();
 };
 
-class Threads : public QThread {
-    Q_OBJECT
-public:
-    Threads() {}
-    ~Threads() { delete GetInstance(); }
-    void run() {
-        for (int i = 0; i < 10; ++i) {
-            emit Update();
-            QThread::msleep(fps_);
-        }
-    }
-    static Threads* GetInstance() {
-        if (!instance_)
-            instance_ = new Threads();
-        return instance_;
-    }
-    void ChangeFps(int fps) {
-        GetInstance()->fps_ = fps;
-    }
-    int fps_;
-private:
-    static Threads* instance_;
-signals:
-    void Update();
-};
 #endif  // MAINWINDOW_H

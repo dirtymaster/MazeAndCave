@@ -2,9 +2,9 @@
 
 namespace s21 {
 Controller* Controller::instance_ = nullptr;
-Controller::Controller() { abstract_class = new Maze;}
+Controller::Controller() { abstract_class = new Maze; }
 Controller::~Controller() {
-    if (abstract_class) delete abstract_class;
+    // if (abstract_class) delete abstract_class;
 }
 Controller* Controller::GetInstance() {
     if (!instance_) instance_ = new Controller;
@@ -27,7 +27,7 @@ void Controller::ClearData() { abstract_class->ClearData(); }
 std::vector<std::pair<int, int>> Controller::SolveTheMaze(std::pair<int, int> from, std::pair<int, int> to) {
     return ((Maze*)abstract_class)->SolveTheMaze(from, to);
 }
-bool Controller::SaveToTextFile(std::string path) { return abstract_class->SaveToTextFile(path); }
+bool Controller::SaveToTextFile(std::string path) { return ((Maze*)abstract_class)->SaveToTextFile(path); }
 int Controller::GetRows() { return abstract_class->GetRows(); }
 int Controller::GetCols() { return abstract_class->GetCols(); }
 const std::vector<std::vector<int>>& Controller::GetRightWallMatrix() {
