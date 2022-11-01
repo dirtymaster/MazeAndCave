@@ -1,5 +1,6 @@
 # MazeAndCave
 ### Demonstration
+Click to open the YouTube video.
 [![demonstration](https://img.youtube.com/vi/P_gqwcu3QF0/0.jpg)](https://youtu.be/P_gqwcu3QF0)
 
 Implementation of a program for generating beautiful mazes and caves. The program is developed in C++ language of C++17 standard and QT Creator.
