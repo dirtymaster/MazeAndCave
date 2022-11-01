@@ -31,4 +31,4 @@ leaks_check: compile
 	CK_FORKS=no leaks -atExit -- ./a.out
 
 clean:
-	rm -rf Maze.tgz a.out* View/Maze.app info.dvi Maze build-View-Desktop_x86_darwin_generic_mach_o_64bit-Debug
+	rm -rf Maze.tgz a.out* View/Maze.app info.dvi Maze build-Maze-Desktop_x86_darwin_generic_mach_o_64bit-Debug

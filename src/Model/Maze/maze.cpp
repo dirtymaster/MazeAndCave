@@ -5,6 +5,7 @@
 
 namespace s21 {
 Maze::~Maze() { ClearData(); }
+
 void Maze::ClearData() {
     right_wall_matrix_.clear();
     bottom_wall_matrix_.clear();
@@ -156,8 +157,11 @@ std::vector<AbstractClass::pair> Maze::SolveTheMaze(pair from, pair to) {
     pair tmp = from;
 
     RecursiveSearch(from, to, tmp, path);
-
-    return path;
+    std::vector<pair> return_path;
+    for (int i = path.size() - 1; path[i + 1] != from; --i) {
+        return_path.push_back(path[i]);
+    }
+    return return_path;
 }
 
 void Maze::RecursiveSearch(pair from, pair to, pair& tmp, std::vector<pair>& path) {
@@ -171,12 +175,11 @@ void Maze::RecursiveSearch(pair from, pair to, pair& tmp, std::vector<pair>& pat
     if (LeftWayIsAvailable(from, to, tmp, path, itr)) return;
     if (RightWayIsAvailable(from, to, tmp, path, itr)) return;
 
-    if (path.size() > 1)
-        itr = path.end() - 2;
-    else
-        itr = path.begin();
+    if (path.size() > 1) {
+        path.pop_back();
+    }
+    itr = path.end() - 1;
     tmp = *itr;
-    path.pop_back();
 }
 
 bool Maze::UpperWayIsAvailable(pair from, pair to, pair& tmp, std::vector<pair>& path,
@@ -194,11 +197,6 @@ bool Maze::UpperWayIsAvailable(pair from, pair to, pair& tmp, std::vector<pair>&
         }
     }
     if (tmp == to) return true;
-    if (tmp == from || *(path.end() - 1) == from) {
-        path.clear();
-        path.push_back(from);
-        itr = path.begin();
-    }
     return false;
 }
 
@@ -217,11 +215,6 @@ bool Maze::LowerWayIsAvailable(pair from, pair to, pair& tmp, std::vector<pair>&
         }
     }
     if (tmp == to) return true;
-    if (tmp == from || *(path.end() - 1) == from) {
-        path.clear();
-        path.push_back(from);
-        itr = path.begin();
-    }
     return false;
 }
 
@@ -240,11 +233,6 @@ bool Maze::LeftWayIsAvailable(pair from, pair to, pair& tmp, std::vector<pair>& 
         }
     }
     if (tmp == to) return true;
-    if (tmp == from || *(path.end() - 1) == from) {
-        path.clear();
-        path.push_back(from);
-        itr = path.begin();
-    }
     return false;
 }
 
@@ -263,11 +251,6 @@ bool Maze::RightWayIsAvailable(pair from, pair to, pair& tmp, std::vector<pair>&
         }
     }
     if (tmp == to) return true;
-    if (tmp == from || *(path.end() - 1) == from) {
-        path.clear();
-        path.push_back(from);
-        itr = path.begin();
-    }
     return false;
 }
 
@@ -302,9 +285,15 @@ bool Maze::SaveToTextFile(std::string path) {
 }
 
 int Maze::GetRows() { return rows_; }
+
 int Maze::GetCols() { return cols_; }
+
 const AbstractClass::matrix& Maze::GetRightWallMatrix() { return right_wall_matrix_; }
+
 const AbstractClass::matrix& Maze::GetBottomWallMatrix() { return bottom_wall_matrix_; }
+
 void Maze::SetRows(int rows) { rows_ = rows; }
+
 void Maze::SetCols(int cols) { cols_ = cols; }
+
 }  // namespace s21

@@ -12,8 +12,6 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent), ui(new Ui::MainWindow
     connect(thread, &MyThread::Update, this, &MainWindow::on_nextStep_clicked);
     std::string dir_path = QCoreApplication::applicationDirPath().toStdString();
     examples_path_ = QString::fromStdString(dir_path.replace(dir_path.size() - 3, 3, "") + "examples/");
-    //    dir_path = "/Users/pilafber/Desktop/Projects/MazeGithub/";                 // для билда в qt
-    //    examples_path_ = "/Users/pilafber/Desktop/Projects/MazeGithub/examples/";  // для билда в qt
 }
 
 void MainWindow::InitScenes() {
@@ -158,11 +156,13 @@ void MainWindow::on_SaveToTextFile_clicked() {
 void MainWindow::on_SolveTheMaze_clicked() {
     on_solve_the_maze_clicked_flag_ = true;
     ui->SolveTheMaze->setEnabled(false);
-    QMessageBox::about(this, "", "Пожалуйста, выберите 2 точки лабиринта");
+    ui->status->setText("Выберите 2 точки...");
+    ui->Cave->setEnabled(false);
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *event) {
     if (on_solve_the_maze_clicked_flag_) {
+        controller->SetMaze();
         // Получаем координаты клика
         QWidget::mousePressEvent(event);
         x_ = event->x();
@@ -266,21 +266,26 @@ void MainWindow::PaintSolution() {
     centres_ = nullptr;
 
     std::vector<std::pair<int, int>> path = controller->SolveTheMaze(from_, to_);
+    if (path.size() == 0) {
+        QMessageBox::about(this, "", "Ошибка. Попробуйте еще раз");
+    } else {
+        for (unsigned long int i = 0; i < path.size() - 1; i++) {
+            QPolygon pol;
+            pol << QPoint(-(field_size_ / 2) + wall_thickness_ +
+                              (cell_width_ + wall_thickness_) * path[i].second + cell_width_ / 2,
+                          -(field_size_ / 2) + wall_thickness_ +
+                              (cell_height_ + wall_thickness_) * path[i].first + cell_height_ / 2)
+                << QPoint(-(field_size_ / 2) + wall_thickness_ +
+                              (cell_width_ + wall_thickness_) * path[i + 1].second + cell_width_ / 2,
+                          -(field_size_ / 2) + wall_thickness_ +
+                              (cell_height_ + wall_thickness_) * path[i + 1].first + cell_height_ / 2);
+            maze_scene_->addPolygon(pol, *redpen);
+        }
 
-    for (unsigned long int i = 0; i < path.size() - 1; i++) {
-        QPolygon pol;
-        pol << QPoint(-(field_size_ / 2) + wall_thickness_ +
-                          (cell_width_ + wall_thickness_) * path[i].second + cell_width_ / 2,
-                      -(field_size_ / 2) + wall_thickness_ +
-                          (cell_height_ + wall_thickness_) * path[i].first + cell_height_ / 2)
-            << QPoint(-(field_size_ / 2) + wall_thickness_ +
-                          (cell_width_ + wall_thickness_) * path[i + 1].second + cell_width_ / 2,
-                      -(field_size_ / 2) + wall_thickness_ +
-                          (cell_height_ + wall_thickness_) * path[i + 1].first + cell_height_ / 2);
-        maze_scene_->addPolygon(pol, *redpen);
+        on_solve_the_maze_clicked_flag_ = false;
     }
-
-    on_solve_the_maze_clicked_flag_ = false;
+    ui->status->setText("");
+    ui->Cave->setEnabled(true);
 }
 
 void MainWindow::on_LoadCaveFromFile_clicked() {
@@ -351,8 +356,6 @@ void MainWindow::PaintCave() {
         }
     }
 }
-
-void MainWindow::on_tabWidget_currentChanged() {}
 
 void MainWindow::on_nextStep_clicked() {
     controller->NextStep(ui->birthLimit->value(), ui->deathLimit->value());

@@ -1,6 +1,9 @@
 #ifndef MAZE_H
 #define MAZE_H
 
+#include <math.h>
+
+#include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <string>

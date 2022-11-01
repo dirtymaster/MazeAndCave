@@ -39,13 +39,13 @@ public slots:
     void on_SolveTheMaze_clicked();
     void on_SaveToTextFile_clicked();
     void on_LoadCaveFromFile_clicked();
-    void on_tabWidget_currentChanged();
     void on_generateCave_clicked();
     void on_RandomSizeCave_stateChanged(int arg1);
     void on_nextStep_clicked();
     void on_birthLimit_valueChanged();
     void on_deathLimit_valueChanged();
     void on_autoupdate_clicked();
+    void on_fps_valueChanged();
 
 private:
     void InitScenes();
@@ -84,8 +84,6 @@ private:
     MyThread* thread;
 signals:
     void SendStop();
-private slots:
-    void on_fps_valueChanged();
 };
 
 #endif  // MAINWINDOW_H

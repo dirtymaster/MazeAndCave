@@ -46,10 +46,15 @@ void Cave::AllocateMemory() {
 void Cave::ClearData() { matrix_of_cells_.clear(); }
 
 int Cave::GetRows() { return rows_; }
+
 int Cave::GetCols() { return cols_; }
+
 const AbstractClass::matrix& Cave::GetCaveMatrix() { return matrix_of_cells_; }
+
 void Cave::SetRows(int rows) { rows_ = rows; }
+
 void Cave::SetCols(int cols) { cols_ = cols; }
+
 
 void Cave::NextStep(int birth_limit, int death_limit) {
     matrix tmp_matrix(matrix_of_cells_);

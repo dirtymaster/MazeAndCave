@@ -4,6 +4,7 @@ namespace s21 {
 Controller* Controller::instance_ = nullptr;
 
 Controller::Controller() { abstract_class = new Maze; }
+
 Controller::~Controller() {
     if (abstract_class) delete abstract_class;
 }
@@ -37,7 +38,7 @@ bool Controller::ParseFile(std::string path) { return abstract_class->ParseFile(
 
 void Controller::ClearData() { abstract_class->ClearData(); }
 
-std::vector<std::pair<int, int>> Controller::SolveTheMaze(std::pair<int, int> from, std::pair<int, int> to) {
+std::vector<AbstractClass::pair> Controller::SolveTheMaze(AbstractClass::pair from, AbstractClass::pair to) {
     return ((Maze*)abstract_class)->SolveTheMaze(from, to);
 }
 
