@@ -13,8 +13,8 @@ Users can generate mazes using the Eller's algorithm, find a path between any tw
 ### Install
 The program is designed to be installed on macOS using the make and qmake utilities.
 ```
-git clone git@github.com:abceff/MazeAndCave.git
-cd src
+git clone https://github.com/abceff/MazeAndCave.git
+cd MazeAndCave/src
 make install
 ```
 You can also download the executable file from Releases.
@@ -33,8 +33,8 @@ You can also download the executable file from Releases.
 ### Установка
 Программа предназначена для установки на macOS с помощью утилит make и qmake.
 ```
-git clone git@github.com:abceff/MazeAndCave.git
-cd src
+git clone https://github.com/abceff/MazeAndCave.git
+cd MazeAndCave/src
 make install
 ```
 Вы также можете загрузить исполняемый файл из Releases.
